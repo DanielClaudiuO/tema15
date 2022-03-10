@@ -33,6 +33,10 @@ class Marfa
     #[ORM\Column(type: 'integer')]
     private $volum;
 
+    #[ORM\ManyToOne(targetEntity: Depozit::class, inversedBy: 'marfa')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $depozit;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -106,6 +110,18 @@ class Marfa
     public function setVolum(int $volum): self
     {
         $this->volum = $volum;
+
+        return $this;
+    }
+
+    public function getDepozit(): ?Depozit
+    {
+        return $this->depozit;
+    }
+
+    public function setDepozit(?Depozit $depozit): self
+    {
+        $this->depozit = $depozit;
 
         return $this;
     }

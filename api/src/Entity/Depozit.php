@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\DepozitRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DepozitRepository::class)]
@@ -26,6 +28,17 @@ class Depozit
 
     #[ORM\Column(type: 'date', nullable: true)]
     private $dataIesire;
+
+    #[ORM\OneToMany(mappedBy: 'depozit', targetEntity: Marfa::class)]
+    private $marfa;
+
+    #[ORM\OneToOne(inversedBy: 'depozit', targetEntity: Angajat::class, cascade: ['persist', 'remove'])]
+    private $angajati;
+
+    public function __construct()
+    {
+        $this->marfa = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -76,6 +89,48 @@ class Depozit
     public function setDataIesire(?\DateTimeInterface $dataIesire): self
     {
         $this->dataIesire = $dataIesire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Marfa>
+     */
+    public function getMarfa(): Collection
+    {
+        return $this->marfa;
+    }
+
+    public function addMarfa(Marfa $marfa): self
+    {
+        if (!$this->marfa->contains($marfa)) {
+            $this->marfa[] = $marfa;
+            $marfa->setDepozit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMarfa(Marfa $marfa): self
+    {
+        if ($this->marfa->removeElement($marfa)) {
+            // set the owning side to null (unless already changed)
+            if ($marfa->getDepozit() === $this) {
+                $marfa->setDepozit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAngajati(): ?Angajat
+    {
+        return $this->angajati;
+    }
+
+    public function setAngajati(?Angajat $angajati): self
+    {
+        $this->angajati = $angajati;
 
         return $this;
     }
