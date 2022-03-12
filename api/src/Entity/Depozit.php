@@ -9,7 +9,19 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DepozitRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+    itemOperations: [
+        'get' => ['normalization_context' => ['groups' => ['get']]],
+        'put',
+    ],
+    collectionOperations: [
+        'get',
+        'post',
+        
+    ]
+)]
 class Depozit
 {
     #[ORM\Id]
@@ -17,21 +29,27 @@ class Depozit
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[Groups(["get","read","write"])]
     #[ORM\Column(type: 'string', length: 255)]
     private $nume;
 
+    #[Groups(["get","read","write"])]
     #[ORM\Column(type: 'string', length: 255)]
     private $locatie;
 
+    #[Groups(["get","read","write"])]
     #[ORM\Column(type: 'date', nullable: true)]
     private $dataIntrare;
 
+    #[Groups(["get","read"])]
     #[ORM\Column(type: 'date', nullable: true)]
     private $dataIesire;
 
+    #[Groups(["get","read","write"])]
     #[ORM\OneToMany(mappedBy: 'depozit', targetEntity: Marfa::class)]
     private $marfa;
 
+    #[Groups(["get","read","write"])]   
     #[ORM\OneToOne(inversedBy: 'depozit', targetEntity: Angajat::class, cascade: ['persist', 'remove'])]
     private $angajati;
 
